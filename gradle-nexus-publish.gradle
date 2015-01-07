@@ -25,16 +25,16 @@ class DeployGradleToNexusTask extends DefaultTask {
 	def nexusPath
 	def nexusUsername
 	def nexusPassword
-	def fileName
-	def fileVersion
+	def scriptName
+	def scriptVersion
 	def fileExtension = '.gradle'
 
 	@TaskAction
 	def uploadGradleScriptToNexus() {
-		println "Uploading ${fileName}${fileExtension} to nexus"
+		println "Uploading ${scriptName}${fileExtension} to nexus"
 		
 		def http = new HTTPBuilder(nexusUrl)
-		def buildGradle = project.file("${fileName}${fileExtension}")
+		def buildGradle = project.file("${scriptName}${fileExtension}")
 		def buildGradleFileBody = new FileBody(buildGradle, 'application/octet-stream')
 		http.auth.basic nexusUsername, nexusPassword
 
@@ -45,11 +45,11 @@ class DeployGradleToNexusTask extends DefaultTask {
 
 		http.handler.success = { response ->
 			println response.statusLine
-			println "File ${fileName}${fileExtension} successfully uploaded to nexus."
+			println "File ${scriptName}${fileExtension} successfully uploaded to nexus."
 		}
 
 		http.request(POST) { req ->
-			uri.path = "${nexusPath}${fileName}-${fileVersion}${fileExtension}" 
+			uri.path = "${nexusPath}${scriptName}-${scriptVersion}${fileExtension}" 
 			def entity = new MultipartEntity()
 			entity.addPart("file", buildGradleFileBody)
 			req.entity = entity
