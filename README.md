@@ -8,19 +8,26 @@ The need of an easy way to publish a script in a public site (inside a private n
 At this point, we needed a way to centralize some common scripts, that would be used across many projects. We decided that using our nexus repository would be a good idea. This script is designed to upload this common gradle scripts to nexus, without manual intervention. 
 
 ## Usage
-```groovy
+In the gradle script that you want to upload, lets say, yourScript.gradle:
+
+```gradle
 
 	apply from: 'https://raw.githubusercontent.com/laghi/gradle-script-nexus-publisher/master/gradle-nexus-publish.gradle'
 	
 	uploadGradleScriptToNexus {
-		scriptName = 'your-gradle-script' 							// name of the gradle script in your machine. Notice that the name of the script in nexus will be the same name of the file itself. The location is relative to the project directory
-		scriptVersion = '1.0.0-0'										// the version to be appended to the scriptName
-		nexusUrl = 'http://yournexus' 						 	// the nexus url
+		scriptName = 'yourScript' 							// name of the gradle script in your machine. Notice that the name of the script in nexus will be the same name of the file itself. The location is relative to the project directory
+		scriptVersion = '1.0.0-0'									// the version to be appended to the scriptName
+		nexusUrl = 'http://yournexus' 						 		// the nexus url
 		nexusPath = '/nexus/content/sites/my-gradle-scripts/' 		// the path in which the file script will be distributed
 		nexusUsername = 'user'										// nexus auth user 
 		nexusPassword = 'foo'										// nexus auth password
 	}
 
+```
+
+In the command line just type:
+```
+gradle -b yourScript.gradle uploadGradleScriptToNexus
 ```
 
 ## License
