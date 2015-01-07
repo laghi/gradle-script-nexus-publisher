@@ -15,7 +15,7 @@ At this point, we needed a way to centralize some common scripts, that would be 
 	uploadGradleScriptToNexus {
 		scriptName = 'your-gradle-script' 							// name of the gradle script in your machine. Notice that the name of the script in nexus will be the same name of the file itself. The location is relative to the project directory
 		scriptVersion = '1.0.0-0'										// the version to be appended to the scriptName
-		nexusUrl = 'http://sajwebbuild' 						 	// the nexus url
+		nexusUrl = 'http://yournexus' 						 	// the nexus url
 		nexusPath = '/nexus/content/sites/my-gradle-scripts/' 		// the path in which the file script will be distributed
 		nexusUsername = 'user'										// nexus auth user 
 		nexusPassword = 'foo'										// nexus auth password
