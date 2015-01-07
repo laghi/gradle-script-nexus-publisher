@@ -1,0 +1,58 @@
+
+buildscript {
+	repositories{
+		mavenLocal()
+		mavenCentral()
+	}
+	dependencies {
+		classpath 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
+		classpath 'org.apache.httpcomponents:httpclient:4.3.5'
+		classpath 'org.apache.httpcomponents:httpmime:4.3.5'
+	}
+}
+
+task uploadGradleScriptToNexus(type: DeployGradleToNexusTask)
+
+import static groovyx.net.http.Method.*
+import groovyx.net.http.HTTPBuilder
+import org.apache.http.entity.mime.content.ByteArrayBody
+import org.apache.http.entity.mime.MultipartEntity
+import org.apache.http.entity.mime.content.FileBody
+
+class DeployGradleToNexusTask extends DefaultTask {
+	
+	def nexusUrl
+	def nexusPath
+	def nexusUsername
+	def nexusPassword
+	def fileName
+	def fileVersion
+	def fileExtension = '.gradle'
+
+	@TaskAction
+	def uploadGradleScriptToNexus() {
+		println "Uploading ${fileName}${fileExtension} to nexus"
+		
+		def http = new HTTPBuilder(nexusUrl)
+		def buildGradle = project.file("${fileName}${fileExtension}")
+		def buildGradleFileBody = new FileBody(buildGradle, 'application/octet-stream')
+		http.auth.basic nexusUsername, nexusPassword
+
+		http.handler.failure = { response ->
+			println "Unexpected failure: ${response.statusLine}"
+			println response.getEntity().getContent().getText()
+		}
+
+		http.handler.success = { response ->
+			println response.statusLine
+			println "File ${fileName}${fileExtension} successfully uploaded to nexus."
+		}
+
+		http.request(POST) { req ->
+			uri.path = "${nexusPath}${fileName}-${fileVersion}${fileExtension}" 
+			def entity = new MultipartEntity()
+			entity.addPart("file", buildGradleFileBody)
+			req.entity = entity
+		}
+	}
+}
