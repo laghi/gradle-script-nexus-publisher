@@ -9,7 +9,7 @@ buildscript {
 	}
 }
 
-task uploadGradleScriptToNexus(type: DeployGradleToNexusTask)
+task uploadGradleScriptToNexus(type: DeployGradleToNexusTask, overwrite: true)
 
 import static groovyx.net.http.Method.*
 import groovyx.net.http.HTTPBuilder
