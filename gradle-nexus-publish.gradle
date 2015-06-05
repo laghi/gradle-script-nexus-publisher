@@ -16,19 +16,20 @@ import groovyx.net.http.HTTPBuilder
 import org.apache.http.entity.FileEntity
 
 class DeployGradleToNexusTask extends DefaultTask {
-	
-	def nexusUrl
-	def nexusPath
-	def nexusUsername
-	def nexusPassword
+
+	def nexusUrl = "$System.env.NEXUS_URL"
+	def nexusPath = "$System.env.NEXUS_PATH"
+	def nexusUsername = "$System.env.NEXUS_USERNAME"
+	def nexusPassword = "$System.env.NEXUS_PASSWORD"
 	def scriptName
 	def scriptVersion
 	def fileExtension = '.gradle'
 
 	@TaskAction
 	def uploadGradleScriptToNexus() {
+
 		println "Uploading ${scriptName}${fileExtension} to nexus"
-		
+
 		def http = new HTTPBuilder(nexusUrl)
 		def buildGradle = project.file("${scriptName}${fileExtension}")
 		http.auth.basic nexusUsername, nexusPassword
@@ -44,7 +45,7 @@ class DeployGradleToNexusTask extends DefaultTask {
 		}
 
 		http.request(POST) { req ->
-			uri.path = "${nexusPath}${scriptName}-${scriptVersion}${fileExtension}" 
+			uri.path = "${nexusPath}${scriptName}-${scriptVersion}${fileExtension}"
 			req.entity = new FileEntity(buildGradle)
 		}
 	}
